@@ -1,1 +1,1 @@
-Cartographe
+WEB application for network cartography. Developped in Python3

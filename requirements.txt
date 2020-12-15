@@ -1,0 +1,8 @@
+pip
+threading
+geoip2
+dash
+dash_cytoscape
+dash_bootstrap_components
+dash_core_components
+dash_leaflet

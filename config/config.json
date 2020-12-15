@@ -1,0 +1,29 @@
+{
+    "application": {
+        "host": "127.0.0.1",
+        "port": 80,
+        "title": "Cartographe",
+        "icons_path": ".\\assets\\img\\",
+        "components": {
+            "update_interval": 500,
+            "network_chart": {
+                "layouts": ["concentric", "cose-bilkent", "circle", "dagre", "breadthfirst", "klay", "cola", "spread"],
+                "icons_path": ".\\assets\\img\\"
+            },
+            "map_chart": {
+                "countries": ".\\assets\\countries.json"
+            }
+        }
+    },
+    "module": {
+        "tshark": {
+            "path": "D:\\Wireshark\\tshark.exe",
+            "interface": "Ethernet"
+        }
+    },
+    "database": {
+        "geolite2_city": {
+            "path": ".\\database\\GeoLite2-City_20201208\\GeoLite2-City.mmdb"
+        }
+    }
+}
