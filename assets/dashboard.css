@@ -65,6 +65,7 @@ body .border-bottom {
 .sidebar .nav-link .feather {
   margin-right: 4px;
   filter: contrast(0%) brightness(150%);
+  vertical-align: sub;
 }
 
 .sidebar .nav-link:hover {

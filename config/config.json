@@ -5,7 +5,8 @@
         "title": "Cartographe",
         "icons_path": ".\\assets\\img\\",
         "components": {
-            "update_interval": 500,
+            "dashboard_update_interval": 500,
+            "vitals_update_interval": 2000,
             "network_chart": {
                 "layouts": ["concentric", "cose-bilkent", "circle", "dagre", "breadthfirst", "klay", "cola", "spread"],
                 "icons_path": ".\\assets\\img\\"
@@ -18,7 +19,7 @@
     "module": {
         "tshark": {
             "path": "D:\\Wireshark\\tshark.exe",
-            "interface": "Ethernet"
+            "interface": "Wi-Fi"
         }
     },
     "database": {
