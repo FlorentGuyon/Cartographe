@@ -1,11 +1,19 @@
 * {
-  scrollbar-color: #202324 #454a4d;
+  /*scrollbar-color: #202324 #454a4d;*/
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* Chrome, Safari and Opera */
+*::-webkit-scrollbar { 
+  display: none;
 }
 
 body {
   font-size: .875rem;
   color: rgb(209, 205, 199);
   background-color: #181a1b;
+  font-family: "Segoe UI" !important;
 }
 
 body .border-bottom {
@@ -20,9 +28,7 @@ body .border-bottom {
   color: rgb(158, 150, 137) !important;
 }
 
-/*
- * Navbar
- */
+/******************************* N A V B A R *******************************/
 
 .form-control {
   color: #5b5852;
@@ -37,17 +43,22 @@ body .border-bottom {
   border-color: #ffffff;
 }
 
-/*
- * Sidebar
- */
+.badge {
+  background-color: #bd1212;
+  color: white;
+}
+
+/****************************** S I D E B A R ******************************/
 
 .sidebar {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
-  z-index: 100; /* Behind the navbar */
-  padding: 48px 0 0; /* Height of navbar */
+  z-index: 100;
+  /* Behind the navbar */
+  padding: 48px 0 0;
+  /* Height of navbar */
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
   background-color: #1b1e1f;
 }
@@ -58,7 +69,6 @@ body .border-bottom {
 }
 
 .sidebar .nav-link.active {
-  /*color: rgb(51, 162, 255);*/
   filter: contrast(0%) brightness(200%);
 }
 
@@ -84,7 +94,7 @@ body .border-bottom {
 }
 
 .nav-link {
-  display: block;
+  display: inline-block;
   padding: .5rem 1rem;
 }
 
@@ -96,6 +106,8 @@ body .border-bottom {
 .toast-body {
   padding: unset !important;
 }
+
+/*************************** L E A F L E T   M A P **************************/
 
 .leaflet-control-attribution {
   background-color: transparent !important;
@@ -113,3 +125,76 @@ body .border-bottom {
 .leaflet-control-zoom-out {
   display: none !important;
 }
+
+/**************************** D A T A   T A B L E ***************************/
+
+.dash-table-container .dash-spreadsheet-container .dash-spreadsheet-inner table {
+  --hover: unset !important;
+}
+
+.dash-header {
+  background-color: #181a1b !important;
+  border: none !important;
+  border-bottom: 1px solid #3c4144 !important;
+  text-align: left !important;
+  font-family: 'Segoe UI' !important;
+  font-weight: bold !important;
+}
+
+.column-header-name {
+  padding-left: 10px !important;
+}
+
+.column-header--sort {
+  opacity: 0.5 !important;
+}
+
+.dash-cell {
+  background-color: #181a1b !important;
+  border: none !important;
+  border-top: 1px solid #3c4144 !important;
+  text-align: left !important;
+  font-family: 'Segoe UI' !important;
+  padding-left: 20px !important;
+}
+
+.dash-delete-header {
+  background-color: #181a1b !important;
+  border: none !important;
+}
+
+.dash-delete-cell {
+  background-color: #181a1b !important;
+  border: none !important;
+  color: #891a1b !important;
+}
+
+.cell--selected {
+  background-color: unset !important;
+}
+
+.page-number {
+  display: none !important;
+}
+
+button.first-page {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+button.previous-page {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+button.next-page {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+button.last-page {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+/****************************************************************************/

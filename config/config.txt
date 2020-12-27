@@ -1,0 +1,42 @@
+# LOGS  					  # Debug # Info # Warning # Error # Critical
+default_colors_by_log_level = #40b2df, unset, #cccc36, #e8731e, #c80a0a
+user_colors_by_log_level =
+
+
+# WEB SERVER
+server_host = 127.0.0.1
+server_port = 80
+
+
+# TSHARK 
+tshark_path = D:\Wireshark\tshark.exe
+default_listening_interface = Wi-Fi
+
+
+# GEOLITE2
+geolite2_city_database = .\database\GeoLite2-City_20201208\GeoLite2-City.mmdb
+
+
+# DASHBOARD PAGE
+default_dashboard_update_interval = 2000
+user_dashboard_update_interval = 
+
+
+## NETWORK CHART
+default_network_layout = cola
+user_network_layout = 
+
+
+# VITALS PAGE
+default_vitals_update_interval = 2000
+user_vitals_update_interval =
+
+
+# CAPTURES PAGE
+default_captures_update_interval = 2000
+user_captures_update_interval =
+
+
+# LOGS PAGE
+default_logs_update_interval = 2000
+user_logs_update_interval =
