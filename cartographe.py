@@ -4,7 +4,7 @@ __author__ = "Florent Guyon"
 __maintainer__ = "Florent Guyon"
 __email__ = "florent.guyon@protonmail.com"
 __status__ = "Development"
-__version__ = "1.2"
+__version__ = "1.7"
 __license__ = "GNU General Public Licence v3"
 __credits__ = ["Florent Guyon"]
 

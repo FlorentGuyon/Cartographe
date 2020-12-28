@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from os import listdir, remove
+from os import listdir, remove, path
 from psutil import sensors_battery, Process, virtual_memory, cpu_percent, disk_usage, net_io_counters, net_if_stats, net_if_addrs, AF_LINK
 from socket import AF_INET
 from datetime import timedelta, datetime
@@ -103,10 +103,10 @@ class NetworkChart():
             ]
         )
 
-        for file in listdir("./assets/img/network_chart_icons/"):
+        for file in listdir(f'{config.get("prog_path")}/assets/img/network_chart_icons/'):
             file_name = file.split('.')[0]
             self.classes.append(file_name)
-            selector = {'selector': f".{file_name}", 'style': {'background-image': f'url(./assets/img/network_chart_icons/{file})',
+            selector = {'selector': f'.{file_name}', 'style': {'background-image': f'url({config.get("prog_path")}/assets/img/network_chart_icons/{file})',
                                                                'background-fit': 'cover',
                                                                'background-opacity': 0}}
             self.layout.stylesheet.append(selector)
@@ -166,7 +166,7 @@ class MapChart():
         # https://dash-leaflet.herokuapp.com/#choropleth_us
         # https://leafletjs.com/reference-1.3.4.html#geojson
         countries = GeoJSON(
-            url=f"url(./assets/countries.json)",
+            url=f'url({config.get("prog_path")}/assets/countries.json)',
             options=dict(
                 style=dict(opacity=0, fillOpacity=0)),
             zoomToBoundsOnClick=True,
@@ -236,7 +236,7 @@ class CaptureTable():
     def get_captures(self):
         """Return the details of the captures files"""
         captures = []
-        files = sorted(Path("./capture/").glob('*.pcap'), reverse=True)
+        files = sorted(Path(f'{config.get("prog_path")}/capture/').glob('*.pcap'), reverse=True)
 
         for file in files:
             start, end, interface = file.name.replace(
@@ -259,7 +259,7 @@ class CaptureTable():
                 "capture_duration": duration,
                 "capture_interface": interface,
                 "capture_size": bytes2human(file.stat().st_size),
-                "capture_file": f"capture/{file.name}"})
+                "capture_file": f'{config.get("prog_path")}/capture/{file.name}'})
 
         return captures
 
@@ -350,7 +350,7 @@ class LogTable():
 
     def __init__(self):
         """Initialize the layout of the table with its data"""
-        self.dir_ = "./log/"
+        self.dir_ = f'{config.get("prog_path")}/log/'
         self.file_format = "log"
         self.default_colors = config.get("default_colors_by_log_level")
         self.colors = self.default_colors
@@ -432,7 +432,7 @@ class LogFileTable():
 
     def __init__(self):
         """Initialize the layout of the table with its data"""
-        self.dir_ = "./log/"
+        self.dir_ = f'{config.get("prog_path")}/log/'
         self.file_format = "log"
         self.default_colors = config.get("default_colors_by_log_level")
         self.colors = self.default_colors
@@ -491,7 +491,7 @@ class LogFileTable():
             logger.log.error(
                 "The log file table cannot be colored because the configuration is not valid.")
         else:
-            style_data = [{"if": {"column_id": f"log_file_{level.lower()}"}, "color": color} for level, color in zip(self.levels, self.colors)]
+            style_data = [{"if": {"column_id": f'log_file_{level.lower()}'}, "color": color} for level, color in zip(self.levels, self.colors)]
 
         layout = DataTable(
             id='log_file_table',
@@ -557,7 +557,7 @@ class VitalsGrid():
         """Create a custom indicator object with all the needed information"""
         new_indicator = Figure(
             Indicator(
-                title=f"{title}<br><span style='font-size:0.8em;color:gray'>{subtitle}</span>",
+                title=f'{title}<br><span style="font-size: 0.8em; color: gray">{subtitle}</span>',
                 mode="number",
                 value=value,
                 number={'suffix': "%", 'font': {
@@ -570,11 +570,29 @@ class VitalsGrid():
         )
         return new_indicator
 
+    def pretty_percent(self, percent):
+
+        if percent >= 1.0:
+            return int(percent)
+
+        if percent == 0.0:
+            return 0
+
+        float_ = f'{percent:.100f}'
+        without_zeros = float_.replace('0', '')
+        first_int = without_zeros[1]
+        first_int_index = float_.find(first_int)
+        decimal_count = first_int_index - 1
+        pretty_percent = f'{percent:.{decimal_count}f}'
+
+        return pretty_percent
+
     def get_data(self):
         """Get the list of custom indicator objects"""
         self.updating = True
         data = []
 
+        # RAM
         # https://psutil.readthedocs.io/en/latest/#processes
         battery = sensors_battery()
         subtitle = 'Plugged' if battery.power_plugged else 'Unplugged'
@@ -585,28 +603,34 @@ class VitalsGrid():
         data.append(self.make_new_indicator(
             "Battery", subtitle, battery.percent, critic))
 
+        # RAM
         current_process = Process()
         app_ram_usage = bytes2human(current_process.memory_info().rss)
-        app_ram_percent = int(current_process.memory_percent())
-        subtitle = f"Cartographe: {app_ram_usage} ({app_ram_percent}%)"
+        app_ram_percent = float(current_process.memory_percent())
+        app_ram_percent = self.pretty_percent(app_ram_percent)
+        subtitle = f'Cartographe: {app_ram_usage} ({app_ram_percent}%)'
         ram_percent = int(virtual_memory().percent)
         critic = (ram_percent > 90)
         data.append(self.make_new_indicator(
             "RAM", subtitle, ram_percent, critic))
 
-        app_cpu_usage = int(current_process.cpu_percent(interval=None))
-        subtitle = f"Cartographe: {app_cpu_usage}%"
+        # CPU
+        app_cpu_usage = float(current_process.cpu_percent(interval=None))
+        app_cpu_usage = self.pretty_percent(app_cpu_usage)
+        subtitle = f'Cartographe: {app_cpu_usage}%'
         cpu_usage = int(cpu_percent(interval=None))
         cpu_critic = (cpu_usage > 90)
         data.append(self.make_new_indicator(
             "CPU", subtitle, cpu_usage, cpu_critic))
 
+        # Disk
         disk = disk_usage(str(Path(__file__).parent.absolute()))
         app_disk_used = sum(f.stat().st_size
-                            for f in Path('.').glob('**/*') if f.is_file())
-        app_disk_percent = int(app_disk_used * 100 / disk.total)
+                            for f in Path(config.get("prog_path")).glob('**/*') if f.is_file())
+        app_disk_percent = float(app_disk_used * 100 / disk.total)
+        app_disk_percent = self.pretty_percent(app_disk_percent)
         app_disk_used = bytes2human(app_disk_used)
-        subtitle = f"Cartographe: {app_disk_used} ({app_disk_percent}%)"
+        subtitle = f'Cartographe: {app_disk_used} ({app_disk_percent}%)'
         disk_percent = int(disk.percent)
         critic = (disk_percent > 90)
         data.append(self.make_new_indicator(
@@ -647,17 +671,17 @@ def seconds2delay(seconds):
     delay = ""
 
     if int(years) > 0:
-        delay += f"{int(years)}y "
+        delay += f'{int(years)}y '
     if int(mounts) > 0:
-        delay += f"{int(mounts)}m "
+        delay += f'{int(mounts)}m '
     if int(days) > 0:
-        delay += f"{int(days)}d "
+        delay += f'{int(days)}d '
     if int(hours) > 0:
-        delay += f"{int(hours)}h "
+        delay += f'{int(hours)}h '
     if int(minutes) > 0:
-        delay += f"{int(minutes)}m "
+        delay += f'{int(minutes)}m '
     if int(seconds) > 0:
-        delay += f"{int(seconds)}s"
+        delay += f'{int(seconds)}s'
 
     return delay
 
@@ -705,7 +729,7 @@ navbar = Navbar(
     [
         A(
             [
-                Span(Img(src=f'./assets/img/icon.png',
+                Span(Img(src='/assets/img/icon.png',
                          width=30, className="logo"),
                      className="mr-2"),
                 NavbarBrand("Cartographe",
@@ -740,7 +764,7 @@ sidebar = Nav([
         Nav(
             children=[
                 NavItem([
-                    NavLink([Img(src=f'./assets/img/dashboard.svg',
+                    NavLink([Img(src='/assets/img/dashboard.svg',
                                  className="feather"), " Dashboard"],
                             id="navlink_dashboard",
                             href="/dashboard",
@@ -749,7 +773,7 @@ sidebar = Nav([
                          id="dashboard_badge",
                          className="badge")]),
                 NavItem([
-                    NavLink([Img(src=f'./assets/img/vitals.svg',
+                    NavLink([Img(src='/assets/img/vitals.svg',
                                  className="feather"), " Vitals"],
                             id="navlink_vitals",
                             href="/vitals",
@@ -758,7 +782,7 @@ sidebar = Nav([
                          id="vitals_badge",
                          className="badge")]),
                 NavItem([
-                    NavLink([Img(src=f'./assets/img/captures.svg',
+                    NavLink([Img(src='/assets/img/captures.svg',
                                  className="feather"), " Captures"],
                             id="navlink_captures",
                             href="/captures",
@@ -767,7 +791,7 @@ sidebar = Nav([
                          id="captures_badge",
                          className="badge")]),
                 NavItem([
-                    NavLink([Img(src=f'./assets/img/logs.svg',
+                    NavLink([Img(src='/assets/img/logs.svg',
                                  className="feather"), " Logs"],
                             id="navlink_logs",
                             href="/logs",
@@ -995,11 +1019,10 @@ def display_page(pathname):
 @mydash.callback(Output('vitals_badge', 'children'),
                  Output('logs_badge', 'children'),
                  Input('badge_update_clock', 'n_intervals'),
-                 State('url', 'pathname'))
-def update_badges(ignore, pathname):
+                 State('url', 'pathname'),
+                 State('logs_badge', 'children'))
+def update_badges(ignore, pathname, logs_badge):
     """Update the badge next to each link of the sidebar"""
-    vitals_badge = no_update
-    logs_badge = no_update
 
     # VITALS
     if pathname[1:] == "vitals":
@@ -1027,10 +1050,20 @@ def update_badges(ignore, pathname):
     # LOGS
     if pathname[1:] == "logs":
         logs_badge = None
+
     else:
-        logs_badge = logger.log.get_recent_error_count()
+        if type(logs_badge) is list:
+            if len(logs_badge) > 0:
+                logs_badge = logs_badge[0]
+            else:
+                logs_badge = 0
+        elif logs_badge is None:
+            logs_badge = 0
+
+        logs_badge += logger.log.get_recent_error_count()
+
         if logs_badge == 0:
-            logs_badge = no_update
+            logs_badge = None
 
     return vitals_badge, logs_badge
 

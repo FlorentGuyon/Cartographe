@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
-# Lead to the configuration file of the application from the location of this file
+from sys import argv
+from os import path
+
 from . import logger
 
 
-CONFIG_PATH = "./config/config.txt"
-CONFIG = {}
+CONFIG = {"prog_path": path.abspath(path.dirname(argv[0]))}
 
 
 def load_config():
     """Read the configuration file"""
     global CONFIG
-    with open(CONFIG_PATH, 'r') as file:
+    with open(f'{CONFIG["prog_path"]}/config/config.txt', 'r') as file:
 
         for line in file:
             if line == '\n':

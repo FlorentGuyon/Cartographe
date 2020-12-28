@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from os import rename, mkdir
+from os import rename, mkdir, path
 from datetime import datetime
+from sys import argv
 from pathlib import Path
 from logging import Formatter, FileHandler, StreamHandler, getLogger, DEBUG, shutdown
 
@@ -32,7 +33,7 @@ class Logger():
         today = datetime.now().strftime("%d-%m-%Y")
         formatter = Formatter("%(asctime)s    %(levelname)s    %(message)s")
 
-        self.dir_ = "./log/"
+        self.dir_ = f"{path.abspath(path.dirname(argv[0]))}/log/"
         self.file_format = "log"
         self.file_path = f'{self.dir_}{today}__0_0_0_0_0.{self.file_format}'
 

@@ -30,7 +30,7 @@ class Sniffer(Thread):
 
         self.tshark_path = config.get("tshark_path")
         self.queue = queue
-        self.dir_ = "./capture/"
+        self.dir_ = f'{config.get("prog_path")}/capture/'
         self.file_format = "pcap"
         self.ready = False
         self.running = False
@@ -109,7 +109,7 @@ class Sniffer(Thread):
 
         logger.log.info("Sniffer running.")
 
-        with Popen([self.tshark_path, "-q", "-i", self.interface, "-l", "-T", "json", "-w", self.file_path], stdout=PIPE) as capture:
+        with Popen([self.tshark_path, "-q", "-Q", "-i", self.interface, "-l", "-T", "json", "-w", self.file_path], stdout=PIPE) as capture:
             packet = ""
             logger.log.info(f"Sniffing the {self.interface} interface.")
 
