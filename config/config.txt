@@ -9,7 +9,7 @@ server_port = 80
 
 
 # TSHARK 
-tshark_path = D:\Wireshark\tshark.exe
+tshark_path = C:\Program Files\Wireshark\tshark.exe
 default_listening_interface = Wi-Fi
 
 
