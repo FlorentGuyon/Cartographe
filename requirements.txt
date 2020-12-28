@@ -1,5 +1,3 @@
-pip
-threading
 geoip2
 dash
 dash_cytoscape
