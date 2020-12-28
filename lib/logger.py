@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from os import rename
+from os import rename, mkdir
 from datetime import datetime
 from pathlib import Path
 from logging import Formatter, FileHandler, StreamHandler, getLogger, DEBUG, shutdown
@@ -30,39 +30,52 @@ class Logger():
         self.recent_error_count = 0
 
         today = datetime.now().strftime("%d-%m-%Y")
+        formatter = Formatter("%(asctime)s    %(levelname)s    %(message)s")
 
         self.dir_ = "./log/"
         self.file_format = "log"
         self.file_path = f'{self.dir_}{today}__0_0_0_0_0.{self.file_format}'
 
-        formatter = Formatter("%(asctime)s    %(levelname)s    %(message)s")
-        files = [file.name for file in Path(self.dir_).glob(f'*.{self.file_format}')]
-        log_file_exists = list(filter(lambda name: today in name, files))
+        self.create_directory()
 
-        if len(log_file_exists) > 0:
-            existing_file_path = f"{self.dir_}{log_file_exists[0]}"
+        todays_log_file = self.get_todays_log_file()
+
+        if todays_log_file:
+            existing_file_path = f"{self.dir_}{todays_log_file}"
             stats = existing_file_path.split("__")[1]
             stats = stats.split('.')[0]
 
             if stats == "0_0_0_0_0":
                 with open(existing_file_path, 'r') as content:
+
                     for line in content:
                         level = line.split("    ")[1]
+
                         if level == "DEBUG":
                             self.debug_count += 1
+
                         elif level == "INFO":
                             self.info_count += 1
+
                         elif level == "WARNING":
                             self.warning_count += 1
+
                         elif level == "ERROR":
                             self.error_count += 1
+
                         elif level == "CRITICAL":
                             self.critical_count += 1
+
             else:
                 self.debug_count, self.info_count, self.warning_count, self.error_count, self.critical_count = list(
-                    map(lambda str_: int(str_), stats.split('_')))
+                    map(lambda stat: int(stat), stats.split('_')))
 
-            rename(existing_file_path, self.file_path)
+            try:
+                rename(existing_file_path, self.file_path)
+
+            except Exception as e:
+                print(e)
+                self.file_path = existing_file_path
 
         file_handler = FileHandler(self.file_path)
         file_handler.setLevel(DEBUG)
@@ -72,6 +85,34 @@ class Logger():
         LOGGER.addHandler(file_handler)
 
         self.running = True
+
+    def get_todays_log_file(self):
+        """Rename the corrupt file"""   
+        files = self.get_files()
+        files_name = [file.name for file in files]
+        today = datetime.now().strftime("%d-%m-%Y")
+        todays_log_file = list(filter(lambda name: today in name, files_name))
+
+        if len(todays_log_file) == 0:
+            return None
+
+        return todays_log_file[0]
+
+    def create_directory(self):
+        """Try to create the log directory"""
+        try:
+            mkdir(self.dir_)
+            logger.log.info(f"The {self.dir_} directory is created.")
+
+        except FileExistsError:
+            pass
+
+        except Exception as e:
+            print(e)
+
+    def get_files(self):
+        """Get the list of file from the capture directory"""
+        return sorted(Path(self.dir_).glob(f'*.{self.file_format}'))
 
     def debug(self, message):
         if self.running:
