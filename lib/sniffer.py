@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import signal
-from os import rename, stat, mkdir, path
+from os import rename, stat, mkdir, path, name
 from json import loads
 from pathlib import Path
 
@@ -40,9 +40,14 @@ class Sniffer(Thread):
         if fix_files:
             self.fix_files()
 
-        if self.check_tshark_path():
+        # Windows
+        if name == "nt":
+            if self.check_tshark_path():
+                self.ready = True
+                logger.log.info("Sniffer ready.")
+        # Linux
+        else:
             self.ready = True
-            logger.log.info("Sniffer ready.")
 
     def create_directory(self):
         """Try to create the capture directory"""
