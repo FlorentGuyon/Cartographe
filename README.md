@@ -58,3 +58,10 @@ Clone the repository from this Github page
 > py cartographe.py
  
  * Open an internet browser and search for "*[localhost](http://127.0.0.1:80)*" in the address bar (unless you have previously edited the configuration file, therefore, search for *http://<server_host>:<server_port>*)
+
+ ## Acknowledgements
+
+ * This project is under *[GPL-3.0 License](https://github.com/FlorentGuyon/Cartographe/blob/main/LICENSE.md)*
+ * This project is still under development
+ * This project is not suitable for production environments
+ * This project has educational purpose. It does not improve the security of your network nor your systems.
