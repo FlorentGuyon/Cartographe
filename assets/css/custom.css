@@ -2,6 +2,7 @@
   /*scrollbar-color: #202324 #454a4d;*/
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none;  /* IE and Edge */
+  text-decoration: none;
 }
 
 /* Chrome, Safari and Opera */
@@ -96,6 +97,10 @@ body .border-bottom {
 .nav-link {
   display: inline-block;
   padding: .5rem 1rem;
+}
+
+.nav-item {
+  list-style-type: none;
 }
 
 .toast-header {

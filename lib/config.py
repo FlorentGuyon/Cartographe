@@ -29,6 +29,9 @@ def load_config():
                 else:
                     value = value.strip()
 
+                if value[:2] in ["./", ".\\"]:
+                    value = CONFIG["prog_path"] + value[1:]
+
                 if value in ['', '\n']:
                     value = None
 

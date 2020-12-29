@@ -4,4 +4,5 @@ dash_cytoscape
 dash_bootstrap_components
 dash_core_components
 dash_leaflet
+dash_extensions
 psutil

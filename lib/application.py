@@ -11,11 +11,12 @@ from plotly.graph_objects import Figure, Indicator
 from dash import Dash, callback_context, no_update
 from dash.dependencies import Output, Input, State
 from dash_html_components import Main, Div, Span, P, H2, Table, A, Br, Img
-from dash_bootstrap_components import Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Toast, themes
+from dash_bootstrap_components import Nav, NavLink, NavItem, Navbar, NavbarBrand, NavbarToggler, Toast
 from dash_core_components import Interval, Graph, Location
 from dash_cytoscape import Cytoscape, load_extra_layouts
 from dash_leaflet import GeoJSON, Map, TileLayer
 from dash_leaflet.express import geojson_to_geobuf, dicts_to_geojson
+from dash_extensions.javascript import arrow_function
 from dash_table import DataTable
 from dash.exceptions import PreventUpdate
 from threading import Thread
@@ -106,7 +107,7 @@ class NetworkChart():
         for file in listdir(f'{config.get("prog_path")}/assets/img/network_chart_icons/'):
             file_name = file.split('.')[0]
             self.classes.append(file_name)
-            selector = {'selector': f'.{file_name}', 'style': {'background-image': f'url({config.get("prog_path")}/assets/img/network_chart_icons/{file})',
+            selector = {'selector': f'.{file_name}', 'style': {'background-image': f'/assets/img/network_chart_icons/{file}',
                                                                'background-fit': 'cover',
                                                                'background-opacity': 0}}
             self.layout.stylesheet.append(selector)
@@ -166,12 +167,18 @@ class MapChart():
         # https://dash-leaflet.herokuapp.com/#choropleth_us
         # https://leafletjs.com/reference-1.3.4.html#geojson
         countries = GeoJSON(
-            url=f'url({config.get("prog_path")}/assets/countries.json)',
+            url='/assets/leaflet/countries.json',
             options=dict(
-                style=dict(opacity=0, fillOpacity=0)),
+                style=dict(
+                    opacity=0, 
+                    fillOpacity=0)),
             zoomToBoundsOnClick=True,
-            hoverStyle=dict(opacity=1, color='#666', dashArray='',
-                            fillOpacity=0.25, weight=1)
+            hoverStyle=arrow_function(dict(
+                opacity=1, 
+                color='#666666', 
+                dashArray='',
+                fillOpacity=0.25, 
+                weight=1))
         )
 
         # https://dash-leaflet.herokuapp.com/
@@ -180,7 +187,7 @@ class MapChart():
                 url='https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
                 minZoom=2,
                 maxZoom=25,
-                attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> ',
+                attribution='&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> '
             ),
             # dl.LocateControl(startDirectly=True, options={'locateOptions': {'enableHighAccuracy': True}}),
             countries,
@@ -690,8 +697,7 @@ def seconds2delay(seconds):
 #                       V  A  R  I  A  B  L  E  S                        #
 ##########################################################################
 
-mydash = Dash(external_stylesheets=[
-    themes.BOOTSTRAP], update_title=None)
+mydash = Dash(update_title=None)
 # https://dash.plotly.com/callback-gotchas
 mydash.config.suppress_callback_exceptions = True
 mydash.title = "Cartographe"
